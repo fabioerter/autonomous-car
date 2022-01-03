@@ -37,7 +37,9 @@ void clearLog()
 void toggleAutoUpdate()
 {
   AUpdate = !AUpdate;
-  server.send(200, "application/json", "{""sucesso!""}");
+  server.send(200, "application/json", "{"
+                                       "sucesso!"
+                                       "}");
 }
 void setup(void)
 {
@@ -55,10 +57,17 @@ void setup(void)
   // Inicia a conexão WiFi
   WiFi.begin(ssid, password);
 
-  while (WiFi.status() != WL_CONNECTED)
+  int numbersOfTry = 0;
+  while (WiFi.status() != WL_CONNECTED && numbersOfTry < 6)
   {
     delay(500);
-    Serial.print(".");
+    numbersOfTry++;
+    writeFile(numbersOfTry);
+  }
+  if(WiFi.status() != WL_CONNECTED){
+    Wifi.mode(WIFI_AP_STA);
+    Wifi.begin();
+    writeFile("Não foi possivel conectar a rede em questão, iniciando modo AP!");
   }
 
   writeFile("WiFi connected");
