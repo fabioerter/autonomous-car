@@ -3,6 +3,6 @@ void formatFS(void);
 void createFile(void);
 void deleteFile(void);
 void writeFile(String msg);
-String readFile(String html);
+String readFile();
 void openFS(void);
 

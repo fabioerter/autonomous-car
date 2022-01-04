@@ -3,7 +3,6 @@
 #include <FS/FileManager.h>
 #include <ESP8266WebServer.h>
 #include <HtmlTemplates/htmlTemplates.h>
-#include <AsyncElegantOTA.h>
 
 String html, version = "v1.0";
 bool AUpdate = true;
@@ -11,18 +10,19 @@ ESP8266WebServer server(80);
 String IpAddress;
 void initial()
 {
+  html = "";
   Serial.println("[info] Send HTML");
-  html = append_page_header(AUpdate, version, html, IpAddress);
+  html = append_page_header(AUpdate, version, IpAddress);
 
-  html += "<div id=\"Logger\" class=\"tabcontent\"><p>";
+  html += "<div id=\"Controller\" class=\"tabcontent\"><p>";
   html += append_joyStick_html();
   html += "</p>";
 
   html += "<div id=\"Logger\" class=\"tabcontent\"><p>";
-  html += readFile("");
+  html += readFile();
   html += "</p>";
 
-  html = append_page_footer(AUpdate, html);
+  html += append_page_footer(AUpdate);
 
   server.send(200, "text/html", html);
   writeFile("Route called '/'");
@@ -58,15 +58,15 @@ void setup(void)
   WiFi.begin(ssid, password);
 
   int numbersOfTry = 0;
-  while (WiFi.status() != WL_CONNECTED && numbersOfTry < 6)
+  while (WiFi.status() != WL_CONNECTED && numbersOfTry < 20)
   {
     delay(500);
     numbersOfTry++;
-    writeFile(numbersOfTry);
+    writeFile((String)numbersOfTry);
   }
   if(WiFi.status() != WL_CONNECTED){
-    Wifi.mode(WIFI_AP_STA);
-    Wifi.begin();
+    WiFi.mode(WIFI_AP_STA);
+    WiFi.begin();
     writeFile("Não foi possivel conectar a rede em questão, iniciando modo AP!");
   }
 
@@ -80,8 +80,6 @@ void setup(void)
   server.on("/clearLog", clearLog);
   server.on("/toggleAutoUpdate", HTTP_PUT, toggleAutoUpdate);
   server.begin();
-
-  AsyncElegantOTA.begin(&server);
 }
 void loop(void)
 {

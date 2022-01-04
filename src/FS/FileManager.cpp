@@ -50,9 +50,10 @@ void writeFile(String msg) {
   rFile.close();
 }
  
-String readFile(String html) {
+String readFile() {
   //Faz a leitura do arquivo
   buf = "";
+  String result = "";
   File rFile = SPIFFS.open("/log.txt","r");
   Serial.println("Reading file...");
   while(rFile.available()) {
@@ -60,9 +61,9 @@ String readFile(String html) {
     buf += line;
     buf += "<br />";
   }
-  html += buf;
+  result += buf;
   rFile.close();
-  return html;
+  return result;
 }
  
 void closeFS(void){
