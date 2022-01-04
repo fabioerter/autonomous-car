@@ -66,16 +66,19 @@ void setup(void)
   }
   if(WiFi.status() != WL_CONNECTED){
     WiFi.mode(WIFI_AP_STA);
-    WiFi.begin();
-    writeFile("Não foi possivel conectar a rede em questão, iniciando modo AP!");
+    WiFi.softAP(ssid, password);
+    IpAddress = WiFi.softAPIP().toString();
+
+    writeFile("Não foi possivel conectar a rede em questão, iniciando modo AP!"
+    "IP: " + IpAddress);
+  }
+  else{
+    IpAddress = WiFi.localIP().toString();
+    writeFile("Web Server started with ip: " + IpAddress);
   }
 
-  writeFile("WiFi connected");
-  Serial.println(WiFi.localIP());
-  IpAddress = WiFi.localIP().toString();
   // Inicia o webserver
   server.begin();
-  writeFile("Web Server started");
   server.on("/", initial);
   server.on("/clearLog", clearLog);
   server.on("/toggleAutoUpdate", HTTP_PUT, toggleAutoUpdate);
